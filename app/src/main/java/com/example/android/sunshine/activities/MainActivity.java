@@ -1,41 +1,36 @@
 package com.example.android.sunshine.activities;
 
-
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
+import com.example.android.sunshine.fragments.ForecastFragment;
 import com.example.android.sunshine.R;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class MainActivity extends ActionBarActivity {
+
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(savedInstanceState == null){
+        if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment, new PlaceholderFragment())
+                    .add(R.id.fragment, new ForecastFragment())
                     .commit();
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
 
 
     }
@@ -56,51 +51,37 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+        if (id == R.id.action_map) {
+            openPreferredLocationInMap();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public static class PlaceholderFragment extends Fragment {
-        private ArrayAdapter<String> mForecastAdapter;
-        public PlaceholderFragment() {
+    private void openPreferredLocationInMap() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String location = sharedPreferences.getString(
+                getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default)
+        );
 
+        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                .appendQueryParameter("q", location)
+                .build();
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivity(intent);
+        }else{
+            Log.d(LOG_TAG, "Couldnt call" + location + ", no receiving apps installed!");
         }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-
-
-            String[] forecastArray = {
-                    "Today - Sunny - 88/63",
-                    "Tomorrow - Foggy - 70/40",
-                    "Weds - Cloudy - 72/63",
-                    "Thurs - Asteroids - 75/65",
-                    "Fri - Heavy Rain - 65/56",
-                    "Sat - HELP TRAPPED IN WEATHERSTATION - 60/51",
-                    "Sun - Sunny - 80/68"
-            };
-
-            List<String> weekForecast = new ArrayList<String>(
-                    Arrays.asList(forecastArray)
-            );
-
-            mForecastAdapter = new ArrayAdapter<String>(
-                    getActivity(),
-                    R.layout.list_item_forecast,
-                    R.id.list_item_forecast_textview,
-                    weekForecast);
-
-            ListView listView = (ListView)rootView.findViewById(R.id.listview_forecast);
-            listView.setAdapter(mForecastAdapter);
-
-            return rootView;
-        }
-
 
     }
+
 }
