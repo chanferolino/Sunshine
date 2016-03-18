@@ -3,6 +3,7 @@ package com.example.android.sunshine.data;
 /**
  * Created by Christian on 3/18/2016.
  */
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;

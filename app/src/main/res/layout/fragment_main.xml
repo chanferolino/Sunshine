@@ -2,12 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.MainFragment"
-    tools:showIn="@layout/activity_main">
-
+    tools:context="com.example.android.sunshine.fragments.ForecastFragment">
     <ListView
+        style="@style/ForecastListStyle"
+        android:id="@+id/listview_forecast"
         android:layout_width="match_parent"
-        android:layout_height="513dp"
-        android:id="@+id/listview_forecast"/>
-
+        android:layout_height="match_parent"
+        android:divider="@null" />
 </FrameLayout>
